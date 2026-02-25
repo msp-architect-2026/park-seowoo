@@ -12,44 +12,9 @@ AI 서비스 확산에 따른 **DDoS, API Key 노출, 무분별한 API 호출** 
 ---
 
 ## 🏗️ 시스템 아키텍처
-```
-[외부 인터넷]
-    │
-    ▼
-┌─────────────────────────────────────────────────┐
-│             Security Gateway Layer              │
-│  Nginx Ingress → Rate Limiting → SSL/TLS → JWT  │
-└─────────────────────────────────────────────────┘
-    │
-    ▼
-┌─────────────────────────────────────────────────┐
-│          Kubernetes Cluster (Ubuntu 22.04)      │
-│                                                 │
-│  ┌─────────────────┐   ┌─────────────────────┐  │
-│  │  Master Node    │   │    Worker Node      │  │
-│  │  (Control Plane)│   │    (Data Plane)     │  │
-│  └─────────────────┘   └─────────────────────┘  │
-│                                                 │
-│  ┌──────────────────────────────────────────┐   │
-│  │       Namespace: app                     │   │
-│  │  FastAPI Pod │ PostgreSQL Pod │ MQTT Pod  │   │
-│  └──────────────────────────────────────────┘   │
-│                                                 │
-│  ┌──────────────────────────────────────────┐   │
-│  │       Namespace: monitoring              │   │
-│  │       Prometheus Pod │ Grafana Pod       │   │
-│  └──────────────────────────────────────────┘   │
-│                                                 │
-│  ┌──────────────────────────────────────────┐   │
-│  │       Calico Network Policy              │   │
-│  │  FastAPI ↔ PostgreSQL (허용)              │   │
-│  │  외부 → PostgreSQL 직접 접근 (차단)        │   │
-│  └──────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────┘
-    │
-    ▼
-[Groq Cloud API / OpenAI API]
-```
+
+<img width="3393" height="2607" alt="k8s-architecture (2)" src="https://github.com/user-attachments/assets/4015acab-aa6f-432e-8ace-e2709a27eb62" />
+
 
 ### 레이어별 역할
 
