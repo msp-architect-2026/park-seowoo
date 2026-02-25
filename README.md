@@ -1,52 +1,133 @@
-🛡️ K8S 기반 보안 API 게이트웨이 시스템 (Secure AI Gateway)
+# 🛡️ K8S 기반 보안 API 게이트웨이 시스템
+> **Kubernetes 기반의 Zero-Trust 보안 아키텍처로 Groq Cloud AI API를 안전하게 중계·제어하는 클라우드 네이티브 인프라**
 
-안전한 트래픽 제어 및 Groq Cloud API 연동을 위한 클라우드 네이티브 보안 아키텍처
+---
 
-1. 프로젝트 개요 (Overview)
-본 프로젝트는 클라우드 네이티브 환경에서 AI 서비스 확산에 따른 보안 위협(DDoS, API Key 노출 등)을 인프라 레벨에서 원천 차단하기 위한 Kubernetes 기반 보안 API 게이트웨이를 구축하는 데 목적이 있습니다. 특히 초고속 추론 성능을 제공하는 Groq Cloud API를 안전하게 중계하고 제어하는 인프라를 지향합니다.
+## 📌 프로젝트 개요
 
-2. 시스템 아키텍처 (System Architecture)
-<img width="1342" height="1277" alt="_C__Users_EZEN_Downloads_k8s-architecture html (1)" src="https://github.com/user-attachments/assets/ab876676-7701-4778-9166-dc5d02a80493" />
+AI 서비스 확산에 따른 **DDoS, API Key 노출, 무분별한 API 호출** 등의 보안 위협을 인프라 레벨에서 원천 차단하기 위한 Kubernetes 기반 보안 API 게이트웨이입니다.
 
+초고속 추론 성능을 제공하는 **Groq Cloud API**를 안전하게 중계하고, 모든 트래픽을 제어·암호화·모니터링하는 것을 목표로 합니다.
 
-[Key Layers]
-Security Layer: Nginx Ingress를 통한 Rate Limiting, SSL/TLS 종단 암호화, JWT 검증 적용.
+---
 
-Control Plane (Master Node): kube-apiserver, etcd, Calico CNI를 통한 클러스터 및 네트워크 정책 관리.
+## 🏗️ 시스템 아키텍처
+```
+[외부 인터넷]
+    │
+    ▼
+┌─────────────────────────────────────────────────┐
+│             Security Gateway Layer              │
+│  Nginx Ingress → Rate Limiting → SSL/TLS → JWT  │
+└─────────────────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────────────────┐
+│          Kubernetes Cluster (Ubuntu 22.04)      │
+│                                                 │
+│  ┌─────────────────┐   ┌─────────────────────┐  │
+│  │  Master Node    │   │    Worker Node      │  │
+│  │  (Control Plane)│   │    (Data Plane)     │  │
+│  └─────────────────┘   └─────────────────────┘  │
+│                                                 │
+│  ┌──────────────────────────────────────────┐   │
+│  │       Namespace: app                     │   │
+│  │  FastAPI Pod │ PostgreSQL Pod │ MQTT Pod  │   │
+│  └──────────────────────────────────────────┘   │
+│                                                 │
+│  ┌──────────────────────────────────────────┐   │
+│  │       Namespace: monitoring              │   │
+│  │       Prometheus Pod │ Grafana Pod       │   │
+│  └──────────────────────────────────────────┘   │
+│                                                 │
+│  ┌──────────────────────────────────────────┐   │
+│  │       Calico Network Policy              │   │
+│  │  FastAPI ↔ PostgreSQL (허용)              │   │
+│  │  외부 → PostgreSQL 직접 접근 (차단)        │   │
+│  └──────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────┘
+    │
+    ▼
+[Groq Cloud API / OpenAI API]
+```
 
-Data Plane (Worker Node): containerd 런타임 기반의 Groq 연동 서버 및 모니터링 파드 구동.
+### 레이어별 역할
 
-Application Layer: FastAPI(Groq API 연동), PostgreSQL(암호화 데이터 로그), MQTT Broker 연동.
+| 레이어 | 구성 요소 | 역할 |
+|--------|-----------|------|
+| **Security Layer** | Nginx Ingress, Rate Limiting, SSL/TLS, JWT | 외부 트래픽 인증 및 암호화 종단 처리 |
+| **Control Plane** | kube-apiserver, etcd, Calico CNI, Scheduler | 클러스터 상태 관리 및 네트워크 정책 제어 |
+| **Data Plane** | containerd, kubelet, kube-proxy | Groq 연동 서버 및 모니터링 파드 실행 |
+| **Application Layer** | FastAPI, PostgreSQL, MQTT Broker | AI API 중계, 암호화 로그 저장, IoT 데이터 수신 |
+| **Observability Layer** | Prometheus, Grafana, Alertmanager | 실시간 메트릭 수집, 시각화, 이상 탐지 알림 |
 
-Observability Layer: Prometheus와 Grafana를 활용한 실시간 트래픽 메트릭 수집 및 이상 탐지.
+---
 
-3. 기술 스택 (Tech Stack)
-Infra: K8s (Ubuntu 22.04), Calico CNI, Ingress Controller
+## 🔧 기술 스택
 
-AI/Backend: Groq Cloud API (groq SDK), FastAPI
+| 분류 | 기술 |
+|------|------|
+| **Infra** | Kubernetes (Ubuntu 22.04), Calico CNI, Nginx Ingress Controller |
+| **AI / Backend** | Groq Cloud API (groq SDK), FastAPI, Python Async |
+| **Security** | Calico Network Policy, AES-256 (Fernet), JWT, Kubernetes Secret |
+| **Monitoring** | Prometheus, Grafana, Alertmanager, Telegram Bot |
 
-Security: Calico Network Policy, AES-256 Encryption (Fernet), JWT, K8s Secret
+---
 
-Monitoring: Prometheus, Grafana, Alertmanager (Telegram 연동)
+## ✨ 핵심 차별점
 
-4. 핵심 차별점 (Core Strengths)
-지능형 트래픽 제어: Ingress 수준의 Rate Limiting으로 Groq API의 초고속 호출 특성에 따른 비용 폭증 및 남용 방어.
+### 1. 지능형 트래픽 제어
+Ingress 레벨의 Rate Limiting을 통해 Groq API의 초고속 호출 특성으로 인한 **비용 폭증과 API 남용을 방어**합니다.
 
-제로 트러스트 네트워크: Calico Network Policy를 통해 API 파드와 DB 파드 간의 승인된 통신 외 모든 접근 차단.
+### 2. Zero-Trust 네트워크
+Calico Network Policy로 **파드 간 비인가 횡단 이동을 전면 차단**합니다. FastAPI ↔ PostgreSQL 등 명시적으로 허용된 통신 경로 외에는 모든 접근이 기본 거부됩니다.
 
-데이터 기밀성: Groq을 통해 생성된 모든 AI 응답 로그를 AES-256 알고리즘으로 즉시 암호화하여 저장.
+### 3. 데이터 기밀성 보장
+Groq을 통해 생성된 **모든 AI 응답 로그를 AES-256 알고리즘(Fernet)으로 즉시 암호화**하여 저장합니다. 암호화 키는 Kubernetes Secret으로 안전하게 관리됩니다.
 
-최신 SDK 연동: Groq 공식 Python SDK를 활용한 비동기(Async) 요청 처리로 초저지연 AI 응답 성능 극대화.
+### 4. 비동기 AI 추론 최적화
+Groq 공식 Python SDK의 **비동기(Async) 요청 처리**를 활용해 초저지연 AI 응답 성능을 극대화합니다.
 
-5. 현재 진행 상황 (Status)
-✅ K8s 클러스터 및 Calico CNI 구축 완료
+---
 
-✅ Nginx Ingress Controller 및 보안 설정 완료
+## 🔄 요청 흐름도 (Request Flow)
+```
+① 클라이언트 요청
+   사용자 / IoT 디바이스
+         │  HTTPS
+         ▼
+② Nginx Ingress Controller
+   ├─ SSL/TLS 복호화
+   ├─ Rate Limiting 검사  ─── 초과 시 ──→  [429 Too Many Requests]
+   └─ 도메인 기반 라우팅
+         │
+         ▼
+③ JWT 인증 미들웨어 (FastAPI)
+   ├─ Bearer Token 검증  ──── 실패 시 ──→  [401 Unauthorized]
+   └─ 토큰 만료 시간 확인
+         │
+         ▼
+④ FastAPI 애플리케이션
+   ├─ 요청 파싱 및 유효성 검사
+   └─ Groq Cloud API 비동기 호출 (groq SDK)
+              │
+              ▼
+        [Groq Cloud / LLM 추론]
+              │ AI 응답 반환
+              ▼
+   ├─ 응답 데이터 AES-256 암호화
+   └─ PostgreSQL 로그 저장 (Calico Policy 경유)
+         │
+         ▼
+⑤ 클라이언트에 JSON 응답 반환
+         │
+         ▼
+⑥ Prometheus 메트릭 수집
+   ├─ 요청 수 / 응답 시간 / 오류율 기록
+   ├─ Grafana 대시보드 시각화
+   └─ 임계치 초과 시 Alertmanager → Telegram 알림
+```
 
-✅ AES-256 데이터 암호화 로직 구현 완료
+---
 
-✅ Groq Cloud API 연동 및 비동기 추론 성능 최적화 완료
-
-🔲 Prometheus/Grafana 대시보드 및 알림 시스템 구축 예정
-
-© 2026 parkseowoo. All rights reserved.
+© 2026 [parkseowoo](https://github.com/parkseowoo) · All rights reserved.
