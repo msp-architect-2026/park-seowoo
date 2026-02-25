@@ -13,8 +13,7 @@ AI 서비스 확산에 따른 **DDoS, API Key 노출, 무분별한 API 호출** 
 
 ## 🏗️ 시스템 아키텍처
 
-<img width="3393" height="2607" alt="k8s-architecture (2)" src="https://github.com/user-attachments/assets/4015acab-aa6f-432e-8ace-e2709a27eb62" />
-
+<img width="2262" height="1702" alt="제목 없는 다이어그램 drawio" src="https://github.com/user-attachments/assets/0030cb71-7313-4109-b9b3-111118d8de4e" />
 
 ### 레이어별 역할
 
