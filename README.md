@@ -6,7 +6,8 @@
 본 프로젝트는 클라우드 네이티브 환경에서 AI 서비스 확산에 따른 보안 위협(DDoS, API Key 노출 등)을 인프라 레벨에서 원천 차단하기 위한 Kubernetes 기반 보안 API 게이트웨이를 구축하는 데 목적이 있습니다. 특히 초고속 추론 성능을 제공하는 Groq Cloud API를 안전하게 중계하고 제어하는 인프라를 지향합니다.
 
 2. 시스템 아키텍처 (System Architecture)
-<img width="1352" height="982" alt="Architecture" src="https://github.com/user-attachments/assets/507b7714-43f5-4130-817a-7a9d357219ba" />
+<img width="1342" height="1277" alt="_C__Users_EZEN_Downloads_k8s-architecture html (1)" src="https://github.com/user-attachments/assets/ab876676-7701-4778-9166-dc5d02a80493" />
+
 
 [Key Layers]
 Security Layer: Nginx Ingress를 통한 Rate Limiting, SSL/TLS 종단 암호화, JWT 검증 적용.
