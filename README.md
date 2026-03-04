@@ -94,4 +94,7 @@ Groq 공식 Python SDK의 **비동기(Async) 요청 처리**를 활용해 초저
 
 ---
 
+## 🪪 WIKI 
+https://github.com/msp-architect-2026/park-seowoo.wiki.git
+
 © 2026 [parkseowoo](https://github.com/parkseowoo) · All rights reserved.
