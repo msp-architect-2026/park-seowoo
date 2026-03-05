@@ -1,0 +1,10 @@
+spec:
+  containers:
+  - name: secure-api
+    image: parkseowoo/secure-api:v21.0
+    env:
+    - name: GROQ_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: ai-api-secret
+          key: GROQ_API_KEY

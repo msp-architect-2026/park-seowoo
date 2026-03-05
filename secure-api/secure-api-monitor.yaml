@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: secure-api-monitor
+  namespace: monitoring  # 프로메테우스가 있는 곳
+  labels:
+    release: prometheus-stack # 프로메테우스 오퍼레이터가 이 파일을 읽게 함
+spec:
+  selector:
+    matchLabels:
+      app: secure-api # 우리 서비스의 라벨
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 15s # 1

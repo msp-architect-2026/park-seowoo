@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secure-api
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: secure-api
+  template:
+    metadata:
+      labels:
+        app: secure-api
+    spec:
+      containers:
+      - name: secure-api
+        image: parkseowoo/secure-api:v6.5 
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - secretRef:
+            name: api-secrets
+        # --- 볼륨 마운트 설정 (컨테이너 내부로 주입) ---
+        volumeMounts:
+        - name: code-volume
+          mountPath: /app/main.py
+          subPath: main.py
+      # --- 볼륨 정의 (ConfigMap 연결) ---
+      volumes:
+      - name: code-volume
+        configMap:
+          name: api-code
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: secure-api
+spec:
+  selector:
+    app: secure-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

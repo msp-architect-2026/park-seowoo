@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+groq
+openai
+python-multipart
+cryptography
+mariadb
+pyjwt
+passlib[bcrypt]
+pycryptodome
+mysql-connector-python
