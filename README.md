@@ -100,7 +100,11 @@ Groq 공식 Python SDK의 **비동기(Async) 요청 처리**를 활용해 초저
 
 ---
 
-## 🪪 WIKI 
-https://github.com/msp-architect-2026/park-seowoo.wiki.git
+## 🔗 프로젝트 링크
+
+
+
+| 📖 **Wiki (설계/기획/이행 문서)** | [Wiki 바로가기](https://github.com/msp-architect-2026/park-seowoo/wiki) |
+| 📋 **Project 칸반보드** | [칸반보드 바로가기](https://github.com/orgs/msp-architect-2026/projects/22/views/1) |
 
 © 2026 [parkseowoo](https://github.com/parkseowoo) · All rights reserved.
